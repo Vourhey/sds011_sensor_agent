@@ -57,6 +57,7 @@ class WorkerNode:
             rospy.loginfo('Starting process...')
 
             result_dict = self.sensor.query()
+            rospy.loginfo("Sensor data {}".format(result_dict))
 
             res = Result()
             res.liability = Address("0x0000000000000000000000000000000000000000")
