@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# Standart, System and Third party
+import json
+from threading import Timer
+
+# ROS
+import rospy
+from std_msgs.msg import String
+
+# AIRA
+from robonomics_msgs.msg import Demand, Result
+from ethereum_common.msg import Address
+from ipfs_common.msg import Multihash
+from ipfs_common.ipfs_rosbag import IpfsRosBag
+
+from sds011 import SDS011
+
+
+class WorkerNode:
+
+    def __init__(self):
+        rospy.init_node('worker')
+        rospy.loginfo('Launching worker node...')
+
+        #rospy.Subscriber('/liability/infochan/incoming/demand', Demand, self.on_incoming_demand)
+
+        self.result_publish = rospy.Publisher('/liability/infochan/eth/signing/result', Result, queue_size=128)
+
+        self.interval = int(rospy.get_param("~interval"))
+        self.sensor = SDS011(rospy.get_param("~port"))
+
+        rospy.loginfo('Worker node is launched')
+
+    # def on_incoming_demand(self, msg: Demand):
+    #     rospy.loginfo('Incoming demand %s...', str(msg))
+    #     if msg.model.multihash == rospy.get_param('~model'):
+    #         self.send_result(msg)
+    #     else:
+    #         rospy.loginfo("Demand is not for me")
+
+    def get_multihash(self, data: tuple) -> Multihash:
+        d = {
+                "PM2.5": data[0],
+                "PM1.0": data[1]
+                }
+        topics = {
+                "/data": [ String( json.dumps(d) ) ]
+                }
+        bag = IpfsRosBag(messages=topics)
+        return bag.multihash
+
+
+    def spin(self):
+        def send_result():
+            rospy.loginfo('Starting process...')
+
+            result_dict = self.sensor.query()
+
+            res = Result()
+            res.liability = Address("0x0000000000000000000000000000000000000000")
+            res.result = self.get_multihash(result_dict)
+            res.success = True
+
+            rospy.loginfo(res)
+
+            self.result_publish.publish(res)
+            Timer(self.interval, send_result).start()
+
+        send_result()
+        rospy.spin()
+
+if __name__ == '__main__':
+    WorkerNode().spin()
