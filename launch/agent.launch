@@ -1,7 +1,7 @@
 <launch>
 	<arg name="interval" default="30" />
     <arg name="port" default="/dev/ttyUSB0" />
-    <node name="worker" pkg="sds011_sensor_agent" type="worker_node" output="screen" respawn="true">
+    <node ns="sds011" name="worker" pkg="sds011_sensor_agent" type="worker_node" output="screen" respawn="true">
         <param name="model" value="QmPy4L5btZ651Lt2fGzGY293iYbZErYXV8KkNujGPiuECX" />
 		<param name="interval" value="$(arg interval)" />
         <param name="port" value="$(arg port)" />
