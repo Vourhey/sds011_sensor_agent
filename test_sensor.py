@@ -16,5 +16,7 @@ if __name__ == "__main__":
         t = time.localtime()
         current_t = time.strftime("%H:%M:%S", t)
         print("{}: {}".format(current_t, q))
+        # sensor.sleep(sleep=True)
         time.sleep(25)
+
 

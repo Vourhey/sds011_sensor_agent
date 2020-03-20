@@ -14,6 +14,7 @@ mkRosPackage rec {
   propagatedBuildInputs = [
     robonomics_comm-nightly
     python3Packages.pyserial
+    python3Packages.requests
   ];
 
   meta = with stdenv.lib; {
