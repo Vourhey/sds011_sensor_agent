@@ -2,7 +2,7 @@ import time
 import uuid
 import json
 import requests
-from sds011 import SDS011
+import sds011
 
 BROADCASTER_VERSION = "v0.1.0"
 
@@ -64,7 +64,7 @@ class RpiStation:
         self.start_time = time.time()
         self.mac_address = ''.join(['{:02x}'.format((uuid.getnode() >> ele) & 0xff) for ele in range(0,8*6,8)][::-1])
 
-        self.sensor = SDS011(sds_sensor_port)
+        self.sensor = sds011.SDS011(sds_sensor_port)
 
     def __str__(self):
         return f"{{Version: {self.version}, Start: {self.start_time}, MAC: {self.mac_address}}}"
