@@ -36,12 +36,13 @@ class StationData:
         return f"{{MAC: {self.mac}, Uptime: {self.uptime}, M: {self.meas}}}"
 
 class RpiStation:
-    def __init__(self, sds_sensor_port: str = "/dev/ttyUSB0"):
+    def __init__(self, sds_sensor_port: str = "/dev/ttyUSB0", work_time: int = 5):
         self.version = f"airalab-rpi-broadcaster-{BROADCASTER_VERSION}"
         self.start_time = time.time()
         self.mac_address = ''.join(['{:02x}'.format((uuid.getnode() >> ele) & 0xff) for ele in range(0,8*6,8)][::-1])
 
         self.sensor = SDS011(sds_sensor_port)
+        self.sensor.set_work_period(work_time=work_time)
 
     def __str__(self):
         return f"{{Version: {self.version}, Start: {self.start_time}, MAC: {self.mac_address}}}"
