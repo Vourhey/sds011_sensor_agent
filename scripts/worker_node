@@ -2,20 +2,17 @@
 # -*- coding: utf-8 -*-
 
 # Standart, System and Third party
-import json
 from threading import Timer
 
 # ROS
 import rospy
-from std_msgs.msg import String
 
 # AIRA
 from robonomics_msgs.msg import Demand, Result
-from ethereum_common.msg import Address
-from ipfs_common.msg import Multihash
-from ipfs_common.ipfs_rosbag import IpfsRosBag
 
-from sds011.sds011 import SDS011
+from sds011.station import RpiStation
+from sds011.luftdaten_feeder import LufdatenFeeder
+from sds011.robonomics_feeder import RobonomicsFeeder
 
 
 class WorkerNode:
@@ -26,10 +23,12 @@ class WorkerNode:
 
         #rospy.Subscriber('/liability/infochan/incoming/demand', Demand, self.on_incoming_demand)
 
-        self.result_publish = rospy.Publisher('/liability/infochan/eth/signing/result', Result, queue_size=128)
+        result_publish = rospy.Publisher('/liability/infochan/eth/signing/result', Result, queue_size=128)
 
         self.interval = int(rospy.get_param("~interval"))
-        self.sensor = SDS011(rospy.get_param("~port"))
+        self.rpi_station = RpiStation(rospy.get_param("~port"))
+        self.luftdaten_feeder = LufdatenFeeder()
+        self.robonomics_feeder = RobonomicsFeeder(result_publish)
 
         rospy.loginfo('Worker node is launched')
 
@@ -40,33 +39,16 @@ class WorkerNode:
     #     else:
     #         rospy.loginfo("Demand is not for me")
 
-    def get_multihash(self, data: tuple) -> Multihash:
-        d = {
-                "PM2.5": data[0],
-                "PM10": data[1]
-                }
-        topics = {
-                "/data": [ String( json.dumps(d) ) ]
-                }
-        bag = IpfsRosBag(messages=topics)
-        return bag.multihash
-
-
     def spin(self):
         def send_result():
             rospy.loginfo('Starting process...')
 
-            result_dict = self.sensor.query()
-            rospy.loginfo("Sensor data {}".format(result_dict))
+            station_data = self.rpi_station.get_data()
+            rospy.loginfo(f"Station Data: {station_data}")
 
-            res = Result()
-            res.liability = Address("0x0000000000000000000000000000000000000000")
-            res.result = self.get_multihash(result_dict)
-            res.success = True
+            self.luftdaten_feeder.feed(station_data)
+            self.robonomics_feeder.feed(station_data)
 
-            rospy.loginfo(res)
-
-            self.result_publish.publish(res)
             Timer(self.interval, send_result).start()
 
         send_result()
