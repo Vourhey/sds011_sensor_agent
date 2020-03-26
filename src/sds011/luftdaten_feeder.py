@@ -22,7 +22,10 @@ class LufdatenFeeder:
                 }
 
         rospy.loginfo("Sending data...")
-        r = requests.post(self.apiServerUrl, json=data, headers=headers)
+        try:
+            r = requests.post(self.apiServerUrl, json=data, headers=headers)
+        except Exception as e:
+            rospy.logerr(e)
         rospy.loginfo(f"Response {r.status_code}")
 
 
