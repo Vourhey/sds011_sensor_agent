@@ -2,10 +2,12 @@
 	<arg name="interval" default="300" />
     <arg name="port" default="/dev/ttyUSB0" />
     <arg name="work_time" default="5" />    <!-- minutes -->
+    <arg name="sentry" default="" />
     <node ns="sds011" name="worker" pkg="sds011_sensor_agent" type="worker_node" output="screen" respawn="true">
         <param name="model" value="QmPy4L5btZ651Lt2fGzGY293iYbZErYXV8KkNujGPiuECX" />
 		<param name="interval" value="$(arg interval)" />
         <param name="port" value="$(arg port)" />
         <param name="work_time" value="$(arg work_time)" />
+        <param name="sentry" value="$(arg sentry)" />
     </node>
 </launch>

@@ -15,6 +15,7 @@ mkRosPackage rec {
     robonomics_comm-nightly
     python3Packages.pyserial
     python3Packages.requests
+    python3Packages.sentry-sdk
   ];
 
   meta = with stdenv.lib; {
