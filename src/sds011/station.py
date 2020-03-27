@@ -1,5 +1,5 @@
 import time
-import uuid
+import netifaces
 from sds011.sds011 import SDS011
 
 
@@ -39,10 +39,18 @@ class RpiStation:
     def __init__(self, sds_sensor_port: str = "/dev/ttyUSB0", work_time: int = 5):
         self.version = f"airalab-rpi-broadcaster-{BROADCASTER_VERSION}"
         self.start_time = time.time()
-        self.mac_address = ''.join(['{:02x}'.format((uuid.getnode() >> ele) & 0xff) for ele in range(0,8*6,8)][::-1])
+        self.mac_address = self._get_mac()
 
         self.sensor = SDS011(sds_sensor_port)
         self.sensor.set_work_period(work_time=work_time)
+
+    def _get_mac(self) -> str:
+        fobj = filter(lambda x:  x.startswith("e"), netifaces.interfaces())
+        ieth = list(fobj)[0]    # take the first interface that starts with 'e'
+        idata = netifaces.ifaddresses(ieth)[netifaces.AF_LINK]  # returns something like [{'addr': '8c:16:45:57:e6:f5', 'broadcast': 'ff:ff:ff:ff:ff:ff'}]
+        mac = idata[0]['addr'].replace(':', '')
+        return mac
+
 
     def __str__(self):
         return f"{{Version: {self.version}, Start: {self.start_time}, MAC: {self.mac_address}}}"

@@ -16,6 +16,7 @@ mkRosPackage rec {
     python3Packages.pyserial
     python3Packages.requests
     python3Packages.sentry-sdk
+    python3Packages.netifaces
   ];
 
   meta = with stdenv.lib; {
