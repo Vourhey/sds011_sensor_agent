@@ -45,12 +45,27 @@ class RpiStation:
         self.sensor.set_work_period(work_time=work_time)
 
     def _get_mac(self) -> str:
-        fobj = filter(lambda x:  x.startswith("e"), netifaces.interfaces())
-        ieth = list(fobj)[0]    # take the first interface that starts with 'e'
-        idata = netifaces.ifaddresses(ieth)[netifaces.AF_LINK]  # returns something like [{'addr': '8c:16:45:57:e6:f5', 'broadcast': 'ff:ff:ff:ff:ff:ff'}]
-        mac = idata[0]['addr'].replace(':', '')
-        return mac
+        for interface in netifaces.interfaces():
+            if interface != 'lo':
+                '''
+                if 2 in netifaces.ifaddresses(interface):
+                    _i = netifaces.ifaddresses(interface)
+                    _i = _i[2][0]['addr']
+                    break
+                '''
+                if 17 in netifaces.ifaddresses(interface):
+                    _i = netifaces.ifaddresses(interface)
+                    _i = _i[17][0]['addr']
+                    break
+                '''
+                if 18 in netifaces.ifaddresses(interface):
+                    _i = netifaces.ifaddresses(interface)
+                    _i = _i[18][0]['addr']
+                    break
+                '''
 
+        mac = _i.replace(':', '')
+        return mac
 
     def __str__(self):
         return f"{{Version: {self.version}, Start: {self.start_time}, MAC: {self.mac_address}}}"
