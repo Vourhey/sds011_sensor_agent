@@ -21,10 +21,16 @@ In the package's directory:
 
 ```
 source result/setup.bash
-roslaunch sds011_sensor_agent agent.launch interval:=INTERVAL port:=PORT work_time:=WORK_TIME
+roslaunch sds011_sensor_agent agent.launch
 ```
 
-where `INTERVAL` - optional, specify interval in seconds, default is 30; `PORT` - optional, specify the port the sensor is connected to, default is `/dev/ttyUSB0`, `WORK_TIME` - minutes of a working period for the sensor, default is 5
+## Options
+
+* `interval` - specify interval in seconds, default is 300 seconds
+* `port` - specify the port the sensor is connected to, default is `/dev/ttyUSB0`
+* `work_time` - minutes of a working period for the sensor, default is 5
+* `geo` - latitude and longitude in format `lat, lon`, default is empty
+* `sentry` - [sentry](sentry.io) API string, default is empty
 
 ## As a Service
 
@@ -38,7 +44,7 @@ systemd.services.sds011 = {
       environment.ROS_MASTER_URI =  "http://localhost:11311";
       script = ''
         source /var/lib/liability/sds011_sensor_agent/result/setup.bash \
-        && roslaunch sds011_sensor_agent agent.launch interval:=INTERVAL port:=PORT work_time:=WORK_TIME
+        && roslaunch sds011_sensor_agent agent.launch 
       '';
       serviceConfig = {
         Restart = "on-failure";
@@ -49,5 +55,4 @@ systemd.services.sds011 = {
     };
 ```
 
-Don't forget about `INTERVAL`, `PORT` and `WORK_TIME`. Either specify them or delete 
 
