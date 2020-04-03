@@ -12,8 +12,9 @@ from sds011.station import StationData
 
 
 class RobonomicsFeeder:
-    def __init__(self, publisher: rospy.Publisher):
+    def __init__(self, publisher: rospy.Publisher, geo: str = ""):
         self.publisher = publisher
+        self.geo = geo
 
     def feed(self, data: StationData):
         rospy.loginfo("RobonomicsFeeder:")
@@ -33,7 +34,8 @@ class RobonomicsFeeder:
                 "PM10": data.meas.pm10
                 }
         topics = {
-                "/data": [ String( json.dumps(d) ) ]
+                "/data": [ String( json.dumps(d) ) ],
+                "/geo": [ String( self.geo ) ]
                 }
         bag = IpfsRosBag(messages=topics)
         return bag.multihash

@@ -1,4 +1,5 @@
 import time
+from datetime import timedelta
 import netifaces
 from sds011.sds011 import SDS011
 
@@ -33,7 +34,8 @@ class StationData:
         return ret
 
     def __str__(self):
-        return f"{{MAC: {self.mac}, Uptime: {self.uptime}, M: {self.meas}}}"
+        uptime = str(timedelta(seconds = self.uptime))
+        return f"{{MAC: {self.mac}, Uptime: {uptime}, M: {self.meas}}}"
 
 class RpiStation:
     def __init__(self, sds_sensor_port: str = "/dev/ttyUSB0", work_time: int = 5):
