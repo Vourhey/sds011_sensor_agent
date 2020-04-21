@@ -1,6 +1,6 @@
 #!/usr/bin/evn python3
 
-from sds011 import SDS011
+from sds011.sds011 import SDS011
 import time
 import sys
 
