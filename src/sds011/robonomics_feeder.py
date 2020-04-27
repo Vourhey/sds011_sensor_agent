@@ -1,4 +1,6 @@
 import json
+import subprocess
+import time
 
 import rospy
 from std_msgs.msg import String
@@ -12,9 +14,19 @@ from sds011.station import StationData
 
 
 class RobonomicsFeeder:
-    def __init__(self, publisher: rospy.Publisher, geo: str = ""):
+    def __init__(self,
+                 publisher: rospy.Publisher,
+                 geo: str = "",
+                 robonomics: str = "",
+                 suri: str = "",
+                 dump: int = 60):
         self.publisher = publisher
         self.geo = geo
+
+        self.robonomics = robonomics
+        self.suri = suri
+        self.dump = int(dump) * 60   # seconds
+        self.last_time = time.time()
 
     def feed(self, data: StationData):
         rospy.loginfo("RobonomicsFeeder:")
@@ -25,6 +37,9 @@ class RobonomicsFeeder:
         res.success = True
 
         rospy.loginfo(res)
+
+        if self.robonomics != "":
+            self._to_datalog(res.result.multihash)
 
         self.publisher.publish(res)
 
@@ -39,6 +54,14 @@ class RobonomicsFeeder:
                 }
         bag = IpfsRosBag(messages=topics)
         return bag.multihash
+
+    def _to_datalog(self, ipfs_hash: str):
+        if (time.time() - self.last_time) > self.dump:
+            prog_path = [self.robonomics, "io", "write", "datalog", "-s", self.suri, "--remote", "wss://substrate.ipci.io"]
+            o = subprocess.run(prog_path, stdout=subprocess.PIPE, input=ipfs_hash.encode(), stderr=subprocess.PIPE)
+            rospy.loginfo(o)
+
+            self.last_time = time.time()
 
 
 
