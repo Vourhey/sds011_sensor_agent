@@ -55,4 +55,29 @@ systemd.services.sds011 = {
     };
 ```
 
+## Publish data to blockchain using Robonmics 2.0 package
+
+> Experimental!
+
+You need the last release of [Robonomics](https://github.com/airalab/robonomics/releases) binary. Then you have a few additional arguments for the roslaunch command:
+
+```buildoutcfg
+robonomics_path:=PATH_TO_ROBONOMICS suri:=SURI dump_interval:=DUMP_INTERVAL
+```
+
+where `PATH_TO_ROBONOMICS` - path to `robonomics` binary; 
+`SURI` - a private key or a seed phrase for a publisher account (substrate based);
+`DUMP_INTERVAL` - interval in minutes between two transactions (default 1 hour)
+
+## Troubleshooting
+
+### Could not open port /dev/ttyUSB0
+
+Most probably a user is not in the `dialout` group
+
+Either do `sudo adduser $USER dialout` or add the line to `/etc/nixos/configuration.nix` on NixOS:
+```buildoutcfg
+users.users.liability.extraGroups = [ "dialout" ];
+``` 
+
 
