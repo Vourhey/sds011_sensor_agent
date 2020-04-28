@@ -5,6 +5,10 @@
     <arg name="sentry" default="" />
     <arg name="geo" default="" />
 
+    <arg name="robonomics_path" default="" />
+    <arg name="suri" default="" />
+    <arg name="dump_interval" default="60" />
+
     <node ns="sds011" name="worker" pkg="sds011_sensor_agent" type="worker_node" output="screen" respawn="true">
         <param name="model" value="QmPy4L5btZ651Lt2fGzGY293iYbZErYXV8KkNujGPiuECX" />
 		<param name="interval" value="$(arg interval)" />
@@ -12,5 +16,9 @@
         <param name="work_time" value="$(arg work_time)" />
         <param name="sentry" value="$(arg sentry)" />
         <param name="geo" value="$(arg geo)" />
+
+        <param name="robonomics_path" value="$(arg robonomics_path)" />
+        <param name="suri" value="$(arg suri)" />
+        <param name="dump_interval" value="$(arg dump_interval)" />
     </node>
 </launch>

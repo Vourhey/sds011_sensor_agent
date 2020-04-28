@@ -30,7 +30,11 @@ class WorkerNode:
         self.interval = int(rospy.get_param("~interval"))
         self.rpi_station = RpiStation(rospy.get_param("~port"), rospy.get_param("~work_time"))
         self.luftdaten_feeder = LufdatenFeeder()
-        self.robonomics_feeder = RobonomicsFeeder(result_publish, rospy.get_param("~geo"))
+        self.robonomics_feeder = RobonomicsFeeder(result_publish,
+                                                  rospy.get_param("~geo"),
+                                                  rospy.get_param("~robonomics_path"),
+                                                  rospy.get_param("~suri"),
+                                                  rospy.get_param("~dump_interval"))
 
         rospy.loginfo('Worker node is launched')
 
