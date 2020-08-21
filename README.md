@@ -55,7 +55,7 @@ systemd.services.sds011 = {
     };
 ```
 
-## Publish data to blockchain using Robonmics 2.0 package
+## Publish data to blockchain using Robonomics 2.0 package
 
 > Experimental!
 
